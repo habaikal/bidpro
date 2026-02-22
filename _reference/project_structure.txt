@@ -1,0 +1,62 @@
+bid-automation-platform/
+├── public/
+│   ├── index.html
+│   ├── favicon.ico
+│   ├── logo192.png
+│   ├── logo512.png
+│   ├── manifest.json
+│   └── robots.txt
+├── src/
+│   ├── components/
+│   │   ├── Auth/
+│   │   │   ├── LoginForm.jsx
+│   │   │   └── index.js
+│   │   ├── Dashboard/
+│   │   │   ├── StatsCards.jsx
+│   │   │   ├── SystemPanel.jsx
+│   │   │   └── index.js
+│   │   ├── Bids/
+│   │   │   ├── BidCard.jsx
+│   │   │   ├── BidList.jsx
+│   │   │   ├── BidModal.jsx
+│   │   │   └── index.js
+│   │   ├── Notifications/
+│   │   │   ├── NotificationPanel.jsx
+│   │   │   ├── RealtimeNotifications.jsx
+│   │   │   └── index.js
+│   │   ├── Certificate/
+│   │   │   ├── CertificateModal.jsx
+│   │   │   └── index.js
+│   │   └── Common/
+│   │       ├── Header.jsx
+│   │       ├── Footer.jsx
+│   │       ├── LoadingSpinner.jsx
+│   │       └── index.js
+│   ├── services/
+│   │   ├── api.js
+│   │   ├── websocket.js
+│   │   └── mockData.js
+│   ├── hooks/
+│   │   ├── useAuth.js
+│   │   ├── useWebSocket.js
+│   │   └── useBids.js
+│   ├── utils/
+│   │   ├── constants.js
+│   │   ├── helpers.js
+│   │   └── formatters.js
+│   ├── styles/
+│   │   ├── globals.css
+│   │   └── components.css
+│   ├── App.jsx
+│   ├── App.css
+│   └── index.js
+├── .gitignore
+├── package.json
+├── package-lock.json
+├── tailwind.config.js
+├── postcss.config.js
+├── README.md
+├── .env.example
+├── .env.local
+├── vercel.json
+└── deploy.sh

@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+@theme {
+  --animate-blob: blob 10s infinite;
+  --animate-fade-in-up: fadeInUp 0.5s ease-out forwards;
+  --animate-progress: progress 2s ease-out;
+  --animate-shimmer: shimmer 2s infinite;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  --color-gold-400: #FBBF24;
+  --color-gold-500: #F59E0B;
+  --color-premium-dark: #0B0E14;
+
+  @keyframes blob {
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes progress {
+    from {
+      width: 0%;
+    }
+
+    to {
+      width: 100%;
+    }
+  }
+
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
+/* Custom Utilities for Dark Navy & Gold Theme */
+.bg-premium-dark {
+  background-color: var(--color-premium-dark);
+}
+
+/* Card Styles */
+.card-premium {
+  @apply bg-[#151923] border border-[#2A303C] rounded-[1.5rem];
+}
+
+.card-premium:hover {
+  @apply border-indigo-500/30 transition-colors duration-300;
+}
+
+/* Badge Styles */
+.badge-d-day {
+  @apply bg-red-900/50 text-red-200 border border-red-500/30 px-2 py-0.5 rounded-full text-[10px] font-bold;
+}
+
+.badge-status-new {
+  @apply bg-emerald-900/50 text-emerald-200 border border-emerald-500/30 px-2 py-0.5 rounded-full text-[10px] font-bold;
+}
+
+/* Navigation Tabs */
+.nav-tab {
+  @apply px-4 py-2 text-gray-400 font-medium text-sm transition-colors cursor-pointer;
+}
+
+.nav-tab.active {
+  /* Now bg-gold-500 is a valid utility from the theme */
+  @apply text-black bg-gold-400 rounded-full font-bold shadow-lg shadow-yellow-500/20;
+}
+
+/* Glassmorphism overrides for specific elements if needed, but mostly solid dark now */
+.glass-panel {
+  @apply bg-[#151923] border border-[#2A303C];
+}

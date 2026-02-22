@@ -1,0 +1,127 @@
+<div class="flex h-screen overflow-hidden bg-premium-dark" data-controller="sidebar">
+  <!-- Sidebar Navigation -->
+  <%= render "shared/sidebar" %>
+
+  <!-- Mobile Header -->
+  <div class="md:hidden fixed top-0 w-full z-40 bg-[#0B0E14]/90 px-4 py-3 flex justify-between items-center border-b border-[#2A303C] backdrop-blur-xl">
+     <div class="flex items-center space-x-2">
+        <div class="p-1.5 bg-yellow-500 rounded-lg">
+          <i class="ph ph-brain text-lg text-black"></i>
+        </div>
+        <span class="font-bold text-white tracking-wide">BidAI Pro</span>
+     </div>
+     <button class="text-white p-1">
+       <i class="ph ph-list text-2xl"></i>
+     </button>
+  </div>
+
+  <!-- Main Content -->
+  <main class="flex-1 overflow-y-auto h-full pt-16 md:pt-0 scroll-smooth bg-[#0B0E14]">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+      
+      <!-- Top Navigation Tabs (UI Only) -->
+      <div class="flex justify-between items-center mb-8">
+         <!-- Left Tabs -->
+         <div class="flex space-x-1 bg-[#151923] p-1 rounded-full border border-[#2A303C]">
+            <button class="nav-tab active">전체 피드</button>
+            <button class="nav-tab">관심 항목</button>
+            <button class="nav-tab">분석 완료</button>
+            <button class="nav-tab">마감 임박</button>
+         </div>
+         
+         <!-- Right Actions -->
+         <div class="flex items-center space-x-3">
+            <button class="text-gray-400 hover:text-white transition"><i class="ph ph-bell text-xl"></i></button>
+            <div class="w-8 h-8 rounded-full bg-gradient-to-r from-gray-700 to-gray-600 border border-gray-500"></div>
+         </div>
+      </div>
+
+      <!-- Stats Row (Small Cards) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+         <!-- Card 1 -->
+         <div class="bg-[#151923] p-5 rounded-2xl border border-[#2A303C]">
+            <div class="flex justify-between items-start mb-2">
+               <i class="ph ph-trend-up text-yellow-500 text-xl"></i>
+               <span class="text-[10px] text-green-400 font-bold">+5</span>
+            </div>
+            <p class="text-2xl font-bold text-white mb-1">128 <span class="text-sm font-normal text-gray-500">건</span></p>
+            <p class="text-xs text-gray-400">오늘의 공고</p>
+         </div>
+         
+         <!-- Card 2 -->
+         <div class="bg-[#151923] p-5 rounded-2xl border border-[#2A303C]">
+            <div class="flex justify-between items-start mb-2">
+               <i class="ph ph-bookmark-simple text-yellow-500 text-xl"></i>
+            </div>
+            <p class="text-2xl font-bold text-white mb-1">12 <span class="text-sm font-normal text-gray-500">건</span></p>
+            <p class="text-xs text-gray-400">관심 공고</p>
+         </div>
+         
+         <!-- Card 3 -->
+         <div class="bg-[#151923] p-5 rounded-2xl border border-[#2A303C]">
+            <div class="flex justify-between items-start mb-2">
+               <i class="ph ph-rocket-launch text-yellow-500 text-xl"></i>
+            </div>
+            <p class="text-2xl font-bold text-white mb-1">89 <span class="text-sm font-normal text-gray-500">%</span></p>
+            <p class="text-xs text-gray-400">평균 신뢰도</p>
+         </div>
+      </div>
+
+      <!-- Section Title -->
+      <div class="flex justify-between items-center mb-6">
+        <div class="flex items-center space-x-3">
+           <h2 class="text-xl font-bold text-white">추천 입찰 공고</h2>
+           <span class="px-2 py-0.5 rounded-lg bg-yellow-500/20 text-yellow-500 text-[10px] font-bold border border-yellow-500/20">PRO</span>
+        </div>
+        <button class="px-3 py-1.5 rounded-lg bg-[#151923] border border-[#2A303C] text-xs text-gray-400 hover:text-white flex items-center">
+           정렬 <i class="ph ph-arrows-down-up ml-1"></i>
+        </button>
+      </div>
+
+      <!-- Bid Feed -->
+      <div class="space-y-5">
+         <% @bids.each do |bid| %>
+           <%= render partial: "bid_card", locals: { bid: bid } %>
+         <% end %>
+      </div>
+      
+      <!-- Expert Consultation Setup -->
+      <div class="mt-8 mb-10">
+         <div class="card-premium p-8 text-center bg-gradient-to-b from-[#151923] to-[#0B0E14]">
+             <div class="w-12 h-12 mx-auto bg-[#1A1E29] rounded-full flex items-center justify-center mb-4 border border-yellow-500/30">
+                 <i class="ph ph-headset text-2xl text-yellow-500"></i>
+             </div>
+             <h3 class="text-lg font-bold text-white mb-2">전문가 1:1 컨설팅</h3>
+             <p class="text-sm text-gray-400 mb-6 max-w-sm mx-auto">최적의 입찰 전략 수립을 위한 AI 분석가 오프라인 컨설팅을 지원합니다.</p>
+             <button class="px-8 py-3 rounded-xl bg-white text-black font-bold text-sm hover:bg-gray-100 transition-colors">상담 예약하기</button>
+         </div>
+      </div>
+
+    </div>
+  </main>
+  
+  <!-- Bottom Mobile Nav -->
+  <nav class="md:hidden fixed bottom-4 left-4 right-4 bg-[#151923]/90 backdrop-blur-xl border border-[#2A303C] rounded-2xl p-2 flex justify-around z-50 shadow-2xl">
+     <a href="#" class="p-2 text-yellow-500 flex flex-col items-center">
+        <i class="ph ph-squares-four text-xl mb-0.5"></i>
+        <span class="text-[10px] font-bold">대시보드</span>
+     </a>
+     <a href="#" class="p-2 text-gray-500 flex flex-col items-center">
+        <i class="ph ph-chart-bar text-xl mb-0.5"></i>
+        <span class="text-[10px]">분석도구</span>
+     </a>
+     <div class="relative -top-6">
+        <div class="bg-yellow-500 p-3 rounded-2xl shadow-lg shadow-yellow-500/30">
+           <i class="ph ph-plus text-xl text-black font-bold"></i>
+        </div>
+     </div>
+     <a href="#" class="p-2 text-gray-500 flex flex-col items-center">
+        <i class="ph ph-clock-counter-clockwise text-xl mb-0.5"></i>
+        <span class="text-[10px]">잔여이력</span>
+     </a>
+     <a href="#" class="p-2 text-gray-500 flex flex-col items-center">
+        <i class="ph ph-user text-xl mb-0.5"></i>
+        <span class="text-[10px]">마이페이지</span>
+     </a>
+  </nav>
+</div>

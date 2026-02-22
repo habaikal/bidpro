@@ -1,0 +1,32 @@
+<% unit ||= "" %>
+<% progress ||= 0 %>
+<div class="glass-panel p-5 md:p-6 rounded-[1.5rem] hover:bg-white/10 transition-all duration-500 transform hover:-translate-y-1 relative overflow-hidden group border border-white/10 hover:border-white/30 shadow-lg flex flex-col justify-between h-full">
+  <div class="absolute -right-6 -top-6 p-4 opacity-[0.05] group-hover:opacity-10 transition-opacity duration-500 rotate-12">
+    <i class="ph ph-<%= icon %> text-8xl text-white"></i>
+  </div>
+  
+  <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-<%= color %>-500/10 blur-[40px] rounded-full group-hover:bg-<%= color %>-500/20 transition-colors duration-500"></div>
+
+  <div class="relative z-10">
+    <div class="flex justify-between items-start mb-4">
+      <div class="p-2.5 rounded-xl bg-<%= color %>-500/10 text-<%= color %>-300 border border-<%= color %>-500/10 shadow-inner">
+        <i class="ph ph-<%= icon %> text-xl"></i>
+      </div>
+      
+      <!-- Mini Chart Visualization -->
+      <div class="relative w-10 h-10 flex items-center justify-center">
+         <svg class="transform -rotate-90 w-full h-full" viewBox="0 0 36 36">
+            <path class="text-gray-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="4" stroke-opacity="0.3"></path>
+            <path class="text-<%= color %>-400 drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="<%= progress %>, 100" stroke-linecap="round"></path>
+         </svg>
+      </div>
+    </div>
+    
+    <div>
+      <h3 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight mb-0.5 mt-2 flex items-baseline">
+        <%= value %><span class="text-base text-indigo-300 font-medium ml-1"><%= unit %></span>
+      </h3>
+      <p class="text-indigo-200/60 text-xs font-bold tracking-wider uppercase"><%= title %></p>
+    </div>
+  </div>
+</div>

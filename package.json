@@ -1,0 +1,7 @@
+{
+  "name": "bid_ai_pro",
+  "private": true,
+  "scripts": {
+    "dev": "foreman start -f Procfile.dev"
+  }
+}

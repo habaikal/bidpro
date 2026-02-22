@@ -1,0 +1,79 @@
+<% 
+  # Helper for days remaining (D-Day)
+  days_remaining = (bid.deadline.to_date - Date.today).to_i
+  d_day_text = days_remaining == 0 ? "D-Day" : "D-#{days_remaining}"
+  d_day_class = days_remaining <= 3 ? "bg-red-500/20 text-red-400 border-red-500/30" : "bg-gray-700 text-gray-300"
+%>
+<div class="card-premium p-6 relative group overflow-hidden" id="bid_card_<%= bid.id %>">
+  
+  <!-- Header: Badge & ID & Bookmark -->
+  <div class="flex justify-between items-start mb-4">
+    <div class="flex items-center space-x-2">
+      <span class="inline-flex items-center justify-center px-2 py-1 rounded-md text-[10px] font-bold border <%= d_day_class %> border-opacity-50">
+        <%= d_day_text %>
+      </span>
+      <span class="text-[10px] text-gray-500 font-mono tracking-wider">ID: <%= bid.id.to_s.rjust(6, '0') %></span>
+    </div>
+    <button class="text-gray-600 hover:text-white transition-colors">
+      <i class="ph ph-bookmark-simple text-xl"></i>
+    </button>
+  </div>
+
+  <!-- Title & Agency -->
+  <div class="mb-6">
+    <h3 class="text-lg font-bold text-white mb-2 leading-snug line-clamp-2"><%= bid.title %></h3>
+    <div class="flex items-center text-xs text-gray-400">
+      <i class="ph ph-buildings mr-1.5"></i>
+      <%= bid.agency %>
+    </div>
+  </div>
+
+  <!-- Price Grid -->
+  <div class="grid grid-cols-2 gap-3 mb-6">
+    <!-- Base Price -->
+    <div class="bg-[#0B0E14] rounded-xl p-3 border border-[#2A303C]">
+      <p class="text-[10px] text-gray-500 mb-1">추정 사업비</p>
+      <p class="text-gray-300 font-bold text-sm">₩ <%= number_to_currency(bid.base_price, unit: "", precision: 0) %></p>
+    </div>
+    
+    <!-- AI Price (Gold) -->
+    <div class="bg-[#1A1812] rounded-xl p-3 border border-yellow-500/30 relative overflow-hidden">
+      <div class="absolute inset-0 bg-yellow-500/5 opacity-50"></div>
+      <p class="text-[10px] text-yellow-500 mb-1 flex items-center font-bold">
+        <i class="ph ph-sparkle-fill mr-1"></i> AI 제안가
+      </p>
+      <p class="text-yellow-400 font-bold text-sm">₩ <%= number_to_currency(bid.predicted_price, unit: "", precision: 0) %></p>
+    </div>
+  </div>
+
+  <!-- Confidence & Deadline -->
+  <div class="mb-6">
+    <div class="flex justify-between items-end mb-2">
+      <span class="text-[10px] text-gray-400">AI 분석 신뢰도</span>
+      <span class="text-yellow-400 font-bold text-xs"><%= bid.confidence_score %>%</span>
+    </div>
+    <div class="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden mb-1">
+      <div class="bg-yellow-500 h-full rounded-full" style="width: <%= bid.confidence_score %>%"></div>
+    </div>
+    <div class="text-right">
+       <span class="text-[10px] text-gray-500">마감일자 <span class="text-gray-300 ml-1"><%= bid.deadline.strftime("%Y.%m.%d") %></span></span>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="grid grid-cols-7 gap-3">
+    <%= link_to "공고 상세", bid_path(bid), class: "col-span-3 py-3 rounded-xl bg-[#0B0E14] border border-[#2A303C] text-gray-400 text-sm font-bold hover:bg-[#1A1E29] hover:text-white transition-colors flex items-center justify-center" %>
+    <!-- Price Simulation (Triggers Auto Bid logic) -->
+    <div class="col-span-4">
+      <%= form_with url: auto_bid_bid_path(bid), method: :post, class: "w-full", data: { turbo_frame: "bid_modal_#{bid.id}" } do |f| %>
+         <%= f.hidden_field :amount, value: bid.predicted_price %>
+         <button type="submit" class="w-full py-3 rounded-xl bg-[#FBBF24] text-black text-sm font-bold hover:bg-[#F59E0B] transition-colors shadow-lg shadow-yellow-500/10 flex items-center justify-center">
+           <i class="ph ph-calculator mr-1.5"></i> 금액 시뮬레이션
+         </button>
+      <% end %>
+    </div>
+  </div>
+  
+  <!-- Content for modal result -->
+  <%= turbo_frame_tag "bid_modal_#{bid.id}" %>
+</div>

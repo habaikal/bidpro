@@ -1,0 +1,21 @@
+<div class="flex h-screen overflow-hidden bg-premium-dark">
+  <%= render "shared/sidebar" %>
+
+  <main class="flex-1 overflow-y-auto h-full bg-[#0B0E14]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+      <h2 class="text-3xl font-bold text-white mb-8">관심 공고</h2>
+
+      <div class="space-y-5">
+         <% if @bids.any? %>
+            <% @bids.each do |bid| %>
+              <%= render partial: "bids/bid_card", locals: { bid: bid } %>
+            <% end %>
+         <% else %>
+            <div class="text-center py-20">
+               <p class="text-gray-500">등록된 관심 공고가 없습니다.</p>
+            </div>
+         <% end %>
+      </div>
+    </div>
+  </main>
+</div>

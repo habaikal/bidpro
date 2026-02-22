@@ -1,0 +1,645 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { 
+  Bell, Search, Filter, TrendingUp, Shield, Clock, CheckCircle, AlertTriangle, User, Settings, LogOut, 
+  BarChart3, Brain, Zap, Target, Wifi, WifiOff, Key, Activity, Database, Aperture, LayoutDashboard, Rocket 
+} from 'lucide-react';
+
+// 완전 통합 정부 입찰 자동화 AI 플랫폼 (BidAI Pro)
+const BidAutomationPlatform_Pro = () => {
+  // 1. 상태 관리 (기존 코드 기반)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loginForm, setLoginForm] = useState({ email: 'demo@bidai.pro', password: 'demo123' });
+  const [bids, setBids] = useState([]);
+  const [filteredBids, setFilteredBids] = useState([]);
+  const [selectedBid, setSelectedBid] = useState(null);
+  const [userPrice, setUserPrice] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeFilter, setActiveFilter] = useState('전체');
+  const [notifications, setNotifications] = useState([]);
+  const [realtimeNotifications, setRealtimeNotifications] = useState([]);
+  const [dashboardStats, setDashboardStats] = useState({});
+  const [connectionStatus, setConnectionStatus] = useState('connected');
+  const [subscribedBids, setSubscribedBids] = useState(new Set());
+  const [certificateInfo, setCertificateInfo] = useState(null);
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
+  const [showAdvancedPanel, setShowAdvancedPanel] = useState(false);
+  const [systemMetrics, setSystemMetrics] = useState({});
+
+  // 2. 모의 데이터 및 초기화 (기존 코드 기반)
+  useEffect(() => {
+    const mockBids = [
+      // 데이터는 기존 v4 파일과 동일하게 유지하되, 나노바나나 시뮬레이션 데이터 추가
+      {
+        id: 1, bidId: 'BID2025001', project: "차세대 스마트시티 IoT 통합 플랫폼 구축", agency: "서울특별시", dueDate: "2025-10-10", basePrice: 5000000000, category: "IT", status: "마감임박", participants: 12, description: "도시 전역 IoT 센서 네트워크 및 AI 기반 통합 관리 플랫폼 구축사업",
+        aiPrediction: { predictedBid: 4750000000, confidence: 92, analysisDate: new Date(), factors: ["IT분야 평균 낙찰률 95.0%", "서울시 기관 특성 반영"] },
+        nanoBananaSim: { status: '완료', imagePrompt: '스마트시티 IoT 플랫폼 구축 다이어그램' }
+      },
+      {
+        id: 2, bidId: 'BID2025002', project: "국가 클라우드 보안 강화 및 제로트러스트 구축", agency: "과학기술정보통신부", dueDate: "2025-10-15", basePrice: 12000000000, category: "보안", status: "진행중", participants: 18, description: "정부기관 클라우드 보안 인프라 고도화 및 제로트러스트 아키텍처 구현",
+        aiPrediction: { predictedBid: 11400000000, confidence: 89, analysisDate: new Date(), factors: ["보안분야 평균 낙찰률 95.0%", "고난이도 프로젝트 가산점"] },
+        nanoBananaSim: { status: '대기', imagePrompt: '제로트러스트 아키텍처 보안 증명서 이미지' }
+      },
+      {
+        id: 3, bidId: 'BID2025003', project: "AI 기반 디지털 트윈 도로관리 시스템", agency: "국토교통부", dueDate: "2025-10-20", basePrice: 8000000000, category: "건설", status: "신규", participants: 15, description: "인공지능과 디지털트윈을 활용한 차세대 스마트 도로 관리 시스템 구축",
+        aiPrediction: { predictedBid: 7800000000, confidence: 95, analysisDate: new Date(), factors: ["건설분야 평균 낙찰률 97.5%", "디지털트윈 기술 전문성 우대"] },
+        nanoBananaSim: { status: '완료', imagePrompt: 'AI 도로관리 시스템 3D 시뮬레이션 이미지' }
+      },
+      // 3개 입찰 공고만 표시하여 리스트 간결화
+    ];
+
+    const mockStats = { totalBids: 156, wonBids: 23, pendingBids: 12, successRate: 85.2, avgSavings: 12.8 };
+    const mockMetrics = { websocketConnections: 4, crawlingActive: true, aiProcessingActive: true, lastUpdate: new Date().toISOString() };
+    const mockNotifications = [
+      { id: 1, message: "스마트시티 IoT 사업 입찰 마감 2일 전", type: "warning", time: "10분 전" },
+    ];
+
+    setBids(mockBids);
+    setFilteredBids(mockBids);
+    setDashboardStats(mockStats);
+    setSystemMetrics(mockMetrics);
+    setNotifications(mockNotifications);
+
+    const notificationInterval = setInterval(() => {
+      if (isAuthenticated) {
+        setRealtimeNotifications(prev => {
+          const newNotifications = [
+            { id: Date.now(), type: 'new_bid', message: '새로운 입찰 공고가 등록되었습니다', time: new Date().toLocaleTimeString() },
+            { id: Date.now() + 1, type: 'ai_complete', message: 'AI 분석이 완료되었습니다', time: new Date().toLocaleTimeString() },
+            { id: Date.now() + 2, type: 'bid_updated', message: '입찰 정보가 업데이트되었습니다', time: new Date().toLocaleTimeString() }
+          ];
+          const randomNotification = newNotifications[Math.floor(Math.random() * newNotifications.length)];
+          return [randomNotification, ...prev.slice(0, 9)];
+        });
+      }
+    }, 30000);
+
+    return () => clearInterval(notificationInterval);
+  }, [isAuthenticated]);
+
+  // 3. 검색 및 필터링 (기존 코드 기반)
+  useEffect(() => {
+    let filtered = bids;
+    
+    if (searchTerm) {
+      filtered = filtered.filter(bid => 
+        bid.project.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        bid.agency.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    if (activeFilter !== '전체') {
+      filtered = filtered.filter(bid => bid.category === activeFilter);
+    }
+    
+    setFilteredBids(filtered);
+  }, [searchTerm, activeFilter, bids]);
+
+
+  // 4. 이벤트 핸들러 (기존 코드 기반)
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setTimeout(() => {
+      setCurrentUser({ name: '김입찰', email: loginForm.email, company: '테크솔루션(주)' });
+      setIsAuthenticated(true);
+      setConnectionStatus('connected');
+      setMessage('로그인에 성공했습니다!');
+      setLoading(false);
+      setTimeout(() => setMessage(''), 3000);
+    }, 1000);
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setIsAuthenticated(false);
+    setConnectionStatus('disconnected');
+    setRealtimeNotifications([]);
+    setSubscribedBids(new Set());
+  };
+
+  const toggleBidSubscription = (bidId) => {
+    setSubscribedBids(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(bidId)) {
+        newSet.delete(bidId);
+        setMessage(`입찰 ${bidId} 알림이 비활성화되었습니다.`);
+      } else {
+        newSet.add(bidId);
+        setMessage(`입찰 ${bidId} 실시간 알림이 활성화되었습니다.`);
+      }
+      setTimeout(() => setMessage(''), 3000);
+      return newSet;
+    });
+  };
+
+  const requestAIAnalysis = (bidId) => {
+    setMessage('AI 재분석을 요청했습니다. 2초 후 완료됩니다.');
+    setTimeout(() => {
+      setBids(prev => prev.map(bid => 
+        bid.bidId === bidId 
+          ? { ...bid, aiPrediction: { ...bid.aiPrediction, analysisDate: new Date(), confidence: Math.min(98, bid.aiPrediction.confidence + 2) }}
+          : bid
+      ));
+      setRealtimeNotifications(prev => [{
+        id: Date.now(), type: 'ai_complete', message: `입찰 ${bidId} AI 분석이 완료되었습니다`, time: new Date().toLocaleTimeString()
+      }, ...prev.slice(0, 9)]);
+      setMessage('AI 분석이 완료되었습니다!');
+      setTimeout(() => setMessage(''), 3000);
+    }, 2000);
+  };
+
+  const handleCertificateUpload = () => {
+    setSubmitting(true);
+    setTimeout(() => {
+      setCertificateInfo({
+        serialNumber: 'DEMO-CERT-2025-001', issuer: '한국정보인증(주)', subject: '김입찰(테크솔루션)', validTo: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), isActive: true
+      });
+      setShowCertificateModal(false);
+      setSubmitting(false);
+      setMessage('데모 인증서가 성공적으로 등록되었습니다.');
+      setTimeout(() => setMessage(''), 3000);
+    }, 2000);
+  };
+
+  const handleAutoBid = () => {
+    if (!userPrice || isNaN(userPrice) || +userPrice <= 0) {
+      setMessage("유효한 입찰가를 입력해주세요.");
+      return;
+    }
+
+    setSubmitting(true);
+    setMessage('');
+
+    setTimeout(() => {
+      const bidAmount = parseInt(userPrice);
+      const predictedAmount = selectedBid.aiPrediction?.predictedBid || 0;
+      const difference = predictedAmount > 0 ? 
+        ((bidAmount - predictedAmount) / predictedAmount * 100).toFixed(1) : 0;
+
+      setMessage(`
+✅ 자동 입찰이 성공적으로 제출되었습니다!
+📊 입찰가: ${bidAmount.toLocaleString()}원
+🎯 AI 예측가 대비: ${difference > 0 ? '+' : ''}${difference}%
+🏆 예상 낙찰 확률: ${selectedBid.aiPrediction?.confidence || 0}%
+🔐 디지털 서명으로 보안 처리 완료
+      `);
+      
+      setRealtimeNotifications(prev => [{
+        id: Date.now(), type: 'auto_bid_submitted', message: `${selectedBid.project} 자동입찰 제출 완료`, time: new Date().toLocaleTimeString()
+      }, ...prev.slice(0, 9)]);
+
+      setDashboardStats(prev => ({ ...prev, totalBids: prev.totalBids + 1 }));
+
+      setSubmitting(false);
+      setUserPrice('');
+    }, 2000);
+  };
+
+  // 5. 유틸리티 및 컴포넌트 (기존 코드 기반 개선)
+  const getStatusColor = (status) => {
+    switch(status) {
+      case '마감임박': return 'bg-red-50 text-red-700 border-red-200';
+      case '신규': return 'bg-green-50 text-green-700 border-green-200';
+      case '진행중': return 'bg-blue-50 text-blue-700 border-blue-200';
+      case '관심': return 'bg-yellow-50 text-yellow-700 border-yellow-200';
+      default: return 'bg-gray-50 text-gray-700 border-gray-200';
+    }
+  };
+
+  const formatCurrency = (amount) => {
+    // 억 단위로 포맷팅
+    return (amount / 100000000).toLocaleString('ko-KR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '억 원';
+  };
+
+  const ConnectionIndicator = () => (
+    <div className="flex items-center space-x-2 text-sm">
+      {connectionStatus === 'connected' ? (
+        <>
+          <Wifi className="h-4 w-4 text-green-500 animate-pulse" />
+          <span className="text-green-600 font-semibold">실시간 연결</span>
+        </>
+      ) : (
+        <>
+          <WifiOff className="h-4 w-4 text-red-500" />
+          <span className="text-red-600">연결 끊김</span>
+        </>
+      )}
+    </div>
+  );
+
+  const NanoBananaSim = ({ status, imagePrompt }) => {
+    const isCompleted = status === '완료';
+    return (
+      <div className={`flex items-center p-3 rounded-lg border-2 transition-all ${isCompleted ? 'bg-indigo-50 border-indigo-300' : 'bg-gray-50 border-gray-300'}`}>
+        <Aperture className={`h-5 w-5 mr-3 ${isCompleted ? 'text-indigo-600' : 'text-gray-500'}`} />
+        <div className="flex-1">
+          <p className="text-sm font-semibold text-gray-800">
+            {isCompleted ? '나노바나나 이미지 생성 완료' : '나노바나나 생성 대기'}
+          </p>
+          <p className="text-xs text-gray-500 truncate mt-0.5" title={imagePrompt}>
+            프롬프트: {imagePrompt}
+          </p>
+        </div>
+        <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${isCompleted ? 'bg-indigo-600 text-white' : 'bg-gray-300 text-gray-800'}`}>
+          {status}
+        </span>
+      </div>
+    );
+  };
+
+
+  // 6. 뷰 렌더링
+  // 로그인 화면
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-10 transform transition-all duration-500 hover:shadow-3xl">
+          <div className="text-center mb-8">
+            <Brain className="h-16 w-16 text-indigo-600 mx-auto mb-4 animate-bounce-slow" />
+            <h1 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+              BidAI Pro
+            </h1>
+            <p className="text-gray-600 mt-2 font-medium">정부 입찰의 새로운 패러다임, AI 자동화 플랫폼</p>
+            <div className="mt-6 p-4 bg-indigo-50 rounded-xl border border-indigo-200">
+              <p className="text-sm text-indigo-800">
+                <strong>데모 계정:</strong> <span className="font-mono">demo@bidai.pro</span> / <span className="font-mono">demo123</span>
+              </p>
+            </div>
+          </div>
+          {/* 로그인 폼... (기존 v4와 동일) */}
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">이메일</label>
+              <input type="email" required className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-indigo-200 focus:border-indigo-500 transition-shadow" placeholder="demo@bidai.pro" value={loginForm.email} onChange={(e) => setLoginForm({...loginForm, email: e.target.value})} disabled={loading} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">비밀번호</label>
+              <input type="password" required className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-indigo-200 focus:border-indigo-500 transition-shadow" placeholder="demo123" value={loginForm.password} onChange={(e) => setLoginForm({...loginForm, password: e.target.value})} disabled={loading} />
+            </div>
+            {message && (<div className={`p-4 rounded-xl text-sm ${message.includes('성공') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{message}</div>)}
+            <button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-bold text-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-xl hover:shadow-2xl disabled:opacity-50">
+              {loading ? (<div className="flex items-center justify-center"><div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>로그인 중...</div>) : '데모 시작하기'}
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  // 메인 애플리케이션
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* 헤더 */}
+      <header className="sticky top-0 z-40 bg-white shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-2">
+                <Brain className="h-8 w-8 text-indigo-600" />
+                <h1 className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+                  BidAI Pro
+                </h1>
+              </div>
+              <ConnectionIndicator />
+            </div>
+            
+            <div className="flex items-center space-x-6">
+              {/* 알림 아이콘 */}
+              <div className="relative">
+                <Bell className="h-6 w-6 text-gray-600 cursor-pointer hover:text-indigo-600 transition-colors" />
+                {realtimeNotifications.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">
+                    {realtimeNotifications.length}
+                  </span>
+                )}
+              </div>
+              
+              {/* 인증서 상태 */}
+              <div className="flex items-center space-x-2 text-sm cursor-pointer" onClick={() => setShowCertificateModal(true)}>
+                <Key className={`h-5 w-5 ${certificateInfo?.isActive ? 'text-green-600' : 'text-gray-400'}`} />
+                <span className={`text-sm font-medium ${certificateInfo?.isActive ? 'text-green-600' : 'text-gray-500'}`}>
+                  {certificateInfo?.isActive ? '인증서 활성' : '인증서 등록 필요'}
+                </span>
+              </div>
+
+              {/* 사용자 및 설정 */}
+              <button onClick={() => setShowAdvancedPanel(!showAdvancedPanel)} className="p-2 rounded-full text-gray-600 hover:bg-gray-100 hover:text-indigo-600 transition-colors" title="고급 패널">
+                <Settings className="h-5 w-5" />
+              </button>
+              <div className="flex items-center space-x-2 text-sm">
+                <User className="h-5 w-5 text-gray-600" />
+                <span className="font-semibold text-gray-700">{currentUser?.name}</span>
+              </div>
+              
+              <button onClick={handleLogout} className="p-2 rounded-full text-gray-600 hover:bg-red-100 hover:text-red-600 transition-colors" title="로그아웃">
+                <LogOut className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        
+        {/* 시스템/알림 패널 (조건부 렌더링) */}
+        {(showAdvancedPanel || realtimeNotifications.length > 0) && (
+          <div className="mb-8 space-y-6">
+            {/* 실시간 알림 */}
+            {realtimeNotifications.length > 0 && (
+              <div className="bg-white rounded-xl p-6 shadow-lg border border-indigo-100 animate-slide-in-down">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <Activity className="h-6 w-6 mr-2 text-red-500 animate-pulse" />
+                  실시간 알림 ({realtimeNotifications.length}건)
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 max-h-40 overflow-y-auto">
+                  {realtimeNotifications.slice(0, 5).map(notification => (
+                    <div key={notification.id} className="p-3 rounded-lg bg-gray-50 border-l-4 border-red-400 text-sm">
+                      <p className="font-medium text-gray-800">{notification.message}</p>
+                      <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 고급 시스템 모니터링 */}
+            {showAdvancedPanel && (
+              <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <Database className="h-6 w-6 mr-2 text-purple-600" />
+                  시스템 상태 모니터링
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {/* ... (기존 v4와 동일한 시스템 메트릭스) ... */}
+                  <div className="bg-gray-50 rounded-lg p-3"> <p className="text-xs text-gray-500 mb-1">실시간 연결</p> <p className="text-sm font-bold text-gray-900">{systemMetrics.websocketConnections || 0}개</p> </div>
+                  <div className="bg-gray-50 rounded-lg p-3"> <p className="text-xs text-gray-500 mb-1">크롤링 상태</p> <p className="text-sm font-bold text-gray-900">{systemMetrics.crawlingActive ? '활성' : '비활성'}</p> </div>
+                  <div className="bg-gray-50 rounded-lg p-3"> <p className="text-xs text-gray-500 mb-1">AI 처리</p> <p className="text-sm font-bold text-gray-900">{systemMetrics.aiProcessingActive ? '처리 중' : '대기'}</p> </div>
+                  <div className="bg-gray-50 rounded-lg p-3"> <p className="text-xs text-gray-500 mb-1">마지막 업데이트</p> <p className="text-sm font-bold text-gray-900">{systemMetrics.lastUpdate ? new Date(systemMetrics.lastUpdate).toLocaleTimeString() : '-'}</p> </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 대시보드 통계 */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+          {/* ... (기존 v4와 동일한 통계 카드) ... */}
+          <StatCard icon={Target} title="총 입찰 참여" value={dashboardStats.totalBids || 0} color="indigo" unit="건" />
+          <StatCard icon={CheckCircle} title="낙찰 성공" value={dashboardStats.wonBids || 0} color="green" unit="건" />
+          <StatCard icon={TrendingUp} title="성공률" value={dashboardStats.successRate || 0} color="blue" unit="%" />
+          <StatCard icon={Zap} title="평균 절감률" value={dashboardStats.avgSavings || 0} color="purple" unit="%" />
+        </div>
+
+        {/* 검색 및 필터 */}
+        <div className="bg-white rounded-xl p-6 shadow-lg mb-8 border border-gray-100">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+            <div className="relative flex-1 max-w-lg">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="프로젝트명 또는 발주기관 검색..."
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-4 focus:ring-indigo-200 focus:border-transparent transition-all"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            
+            <div className="flex items-center space-x-2 overflow-x-auto pb-1">
+              <Filter className="h-5 w-5 text-gray-500 flex-shrink-0" />
+              {['전체', 'IT', '보안', '건설'].map(filter => (
+                <button
+                  key={filter}
+                  onClick={() => setActiveFilter(filter)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex-shrink-0 ${
+                    activeFilter === filter
+                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* 입찰 공고 리스트 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {filteredBids.map(bid => (
+            <div key={bid.id} className="bg-white rounded-2xl shadow-xl p-6 border-t-4 border-indigo-600 hover:shadow-2xl transition-all duration-300">
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex-1">
+                  <h3 className="text-xl font-extrabold text-gray-900 mb-2 leading-tight">{bid.project}</h3>
+                  <p className="text-sm text-gray-500 mb-3">{bid.description}</p>
+                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    <span className="flex items-center font-medium"><Shield className="h-4 w-4 mr-1 text-blue-500" />{bid.agency}</span>
+                    <span className="flex items-center"><Clock className="h-4 w-4 mr-1 text-red-500" />마감: {bid.dueDate}</span>
+                  </div>
+                </div>
+                <span className={`px-4 py-1.5 rounded-full text-xs font-bold border ${getStatusColor(bid.status)}`}>
+                  {bid.status}
+                </span>
+              </div>
+
+              {/* AI 예측 및 금액 정보 */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                  <p className="text-xs text-gray-500 mb-1">기초금액</p>
+                  <p className="text-lg font-bold text-gray-900">{formatCurrency(bid.basePrice)}</p>
+                </div>
+                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-4 border border-indigo-300">
+                  <p className="text-xs text-indigo-600 mb-1 flex items-center">
+                    <Brain className="h-4 w-4 mr-1" />AI 예측 입찰가
+                  </p>
+                  <p className="text-xl font-extrabold text-indigo-700 leading-none">
+                    {formatCurrency(bid.aiPrediction.predictedBid)}
+                  </p>
+                  <span className="text-xs text-green-600 font-semibold mt-1 flex items-center">
+                    <BarChart3 className="h-3 w-3 mr-1" />정확도 {bid.aiPrediction.confidence}%
+                  </span>
+                </div>
+              </div>
+
+              {/* 나노바나나 시뮬레이션 */}
+              <NanoBananaSim status={bid.nanoBananaSim.status} imagePrompt={bid.nanoBananaSim.imagePrompt} />
+
+              <div className="flex justify-between items-center mt-5 pt-4 border-t border-gray-100">
+                <div className="flex items-center space-x-3">
+                  <button onClick={() => toggleBidSubscription(bid.bidId)} className={`p-3 rounded-full ${subscribedBids.has(bid.bidId) ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} transition-all`} title={subscribedBids.has(bid.bidId) ? '구독 해제' : '실시간 알림 구독'}><Bell className="h-5 w-5" /></button>
+                  <button onClick={() => requestAIAnalysis(bid.bidId)} className="p-3 rounded-full bg-purple-100 text-purple-600 hover:bg-purple-200 transition-all" title="AI 재분석 요청"><Brain className="h-5 w-5" /></button>
+                </div>
+                <button onClick={() => setSelectedBid(bid)} className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-xl font-bold text-base hover:shadow-2xl">
+                  <Zap className="h-5 w-5 inline mr-2" /> AI 자동입찰 실행
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* 메시지 피드백 */}
+        {message && (
+          <div className={`fixed bottom-5 right-5 z-50 p-4 rounded-xl shadow-2xl transition-opacity duration-300 animate-fade-in ${message.includes('성공') || message.includes('완료') ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
+            <pre className="text-sm font-medium whitespace-pre-wrap">{message}</pre>
+          </div>
+        )}
+
+        {/* 모달: 자동 입찰 */}
+        {selectedBid && (
+          <Modal title="AI 자동 입찰" icon={Zap} onClose={() => { setSelectedBid(null); setUserPrice(''); setMessage(''); }}>
+            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-5 mb-6 shadow-inner">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-gray-600 font-medium">AI 예측가</p>
+                  <p className="text-xl font-extrabold text-indigo-700">{formatCurrency(selectedBid.aiPrediction.predictedBid)}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600 font-medium">예측 정확도</p>
+                  <p className="text-xl font-extrabold text-green-600">{selectedBid.aiPrediction.confidence}%</p>
+                </div>
+              </div>
+            </div>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">입찰 금액 (원)</label>
+              <input type="number" placeholder={`AI 예측가: ${selectedBid.aiPrediction.predictedBid.toLocaleString()}`} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-indigo-200 focus:border-indigo-500" value={userPrice} onChange={(e) => setUserPrice(e.target.value)} disabled={submitting} />
+            </div>
+            <div className="flex space-x-3">
+              <button onClick={() => { setSelectedBid(null); setUserPrice(''); setMessage(''); }} className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all" disabled={submitting}>취소</button>
+              <button onClick={handleAutoBid} disabled={submitting} className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-3 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg disabled:opacity-50 font-bold">
+                {submitting ? (<div className="flex items-center justify-center"><div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>투찰 실행 중...</div>) : '자동 입찰 실행'}
+              </button>
+            </div>
+          </Modal>
+        )}
+
+        {/* 모달: 인증서 관리 */}
+        {showCertificateModal && (
+          <Modal title="디지털 인증서 관리" icon={Key} onClose={() => setShowCertificateModal(false)}>
+            <div className="space-y-4">
+              {certificateInfo ? (
+                // 인증서 등록 완료 상태
+                <div className="space-y-4">
+                  <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+                    <h4 className="font-bold text-green-800 mb-2">✅ 등록된 인증서 (활성)</h4>
+                    <div className="text-sm text-green-700 space-y-1">
+                      <p><span className="font-semibold">발급자:</span> {certificateInfo.issuer}</p>
+                      <p><span className="font-semibold">주체:</span> {certificateInfo.subject}</p>
+                      <p><span className="font-semibold">유효기간:</span> {new Date(certificateInfo.validTo).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  <div className="flex space-x-3">
+                    <button onClick={() => { setCertificateInfo(null); setMessage('인증서가 비활성화되었습니다.'); setTimeout(() => setMessage(''), 3000); }} className="flex-1 px-4 py-2 border border-red-300 text-red-700 rounded-xl hover:bg-red-50 transition-all">비활성화</button>
+                    <button onClick={() => setShowCertificateModal(false)} className="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-xl hover:bg-indigo-700 transition-all">확인</button>
+                  </div>
+                </div>
+              ) : (
+                // 인증서 미등록 상태
+                <div className="space-y-4">
+                  <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+                    <h4 className="font-bold text-blue-800 mb-2">🔔 데모 모드</h4>
+                    <p className="text-sm text-blue-700">
+                      '데모 인증서 생성'을 클릭하여 자동 입찰에 필요한 디지털 서명 시스템을 활성화합니다.
+                    </p>
+                  </div>
+                  <div className="flex space-x-3">
+                    <button onClick={() => setShowCertificateModal(false)} className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all" disabled={submitting}>취소</button>
+                    <button onClick={handleCertificateUpload} disabled={submitting} className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-3 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg disabled:opacity-50 font-bold">
+                      {submitting ? (<div className="flex items-center justify-center"><div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>생성 중...</div>) : '데모 인증서 생성'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Modal>
+        )}
+
+        {/* 푸터 */}
+        <div className="mt-12 text-center">
+          <div className="bg-white rounded-xl p-8 shadow-xl border border-gray-100">
+            <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center justify-center">
+              <Rocket className="h-6 w-6 mr-2 text-indigo-600" />
+              BidAI Pro: 완전 통합 데모 플랫폼 요약
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-600">
+              <FooterSection title="✅ 핵심 기능" items={['실시간 입찰 모니터링', 'AI 기반 입찰가 예측 (92-95% 정확도)', '원클릭 자동 입찰 시뮬레이션', '디지털 인증서/서명 시뮬레이션']} />
+              <FooterSection title="💡 혁신 기술 (나노바나나 컨셉)" items={['제출 서류 이미지 자동 생성/편집 시뮬레이션', '입찰 프로젝트 시각 자료 신속 생성', '사용자 입력 기반 실시간 이미지 수정', 'Gemini 2.5 Flash Image API 연동 (컨셉)']} />
+              <FooterSection title="📊 데모 환경" items={['실제 정부기관명 및 현실적 입찰 규모 사용', '데모 계정: demo@bidai.pro / demo123', '완벽한 사용자 경험 시뮬레이션', '반응형 디자인']} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 재사용 가능한 컴포넌트 정의 (JSX)
+const StatCard = ({ icon: Icon, title, value, color, unit }) => (
+  <div className={`bg-white rounded-xl p-6 shadow-xl border-l-4 border-${color}-500 transition-transform duration-300 hover:scale-[1.03] hover:shadow-2xl`}>
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-sm font-medium text-gray-600">{title}</p>
+        <p className={`text-3xl font-extrabold text-${color}-600 mt-1`}>{value}{unit}</p>
+      </div>
+      <Icon className={`h-10 w-10 text-${color}-500 opacity-20`} />
+    </div>
+  </div>
+);
+
+const FooterSection = ({ title, items }) => (
+  <div className="text-left">
+    <strong className="block text-gray-800 mb-2 border-b-2 border-indigo-100 pb-1">{title}</strong>
+    <ul className="mt-2 space-y-1">
+      {items.map((item, index) => <li key={index} className="flex items-start"><span className="mr-2 text-indigo-500">•</span> {item}</li>)}
+    </ul>
+  </div>
+);
+
+const Modal = ({ title, icon: Icon, onClose, children }) => (
+  <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 transition-opacity duration-300" onClick={onClose}>
+    <div className="bg-white rounded-3xl shadow-3xl max-w-md w-full p-8 transform transition-all duration-300 scale-100" onClick={(e) => e.stopPropagation()}>
+      <div className="text-center mb-6">
+        <Icon className="h-12 w-12 text-indigo-600 mx-auto mb-4" />
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">{title}</h3>
+      </div>
+      {children}
+    </div>
+  </div>
+);
+
+// CSS 스타일링 (Tailwind Utility Classes 외의 커스텀 애니메이션)
+const customStyles = `
+  @keyframes bounce-slow {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  .animate-bounce-slow {
+    animation: bounce-slow 3s infinite;
+  }
+
+  .shadow-3xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 100px 0px rgba(99, 102, 241, 0.3);
+  }
+`;
+
+// 동적 스타일 주입 (Next.js/CRA 환경에서는 일반적으로 CSS 파일에 정의)
+if (typeof document !== 'undefined') {
+  if (!document.getElementById('custom-styles')) {
+    const style = document.createElement('style');
+    style.id = 'custom-styles';
+    style.innerHTML = customStyles;
+    document.head.appendChild(style);
+  }
+}
+
+export default BidAutomationPlatform_Pro;
+
+// Next.js나 CRA 환경에서 실행 가능하도록 기본 내보내기 (tsx 파일명과 맞춤)
+// 이 코드를 실행하기 위해서는 React, TypeScript, Tailwind CSS 환경이 필요합니다.

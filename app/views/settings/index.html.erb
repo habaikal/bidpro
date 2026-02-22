@@ -1,0 +1,51 @@
+<div class="flex h-screen overflow-hidden bg-premium-dark">
+  <%= render "shared/sidebar" %>
+
+  <main class="flex-1 overflow-y-auto h-full bg-[#0B0E14]">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+      <h2 class="text-3xl font-bold text-white mb-8">설정</h2>
+
+      <div class="card-premium p-8 space-y-8">
+         
+         <!-- Profile Section -->
+         <section>
+            <h3 class="text-xl font-bold text-white mb-4 border-b border-[#2A303C] pb-2">프로필 설정</h3>
+            <div class="flex items-center space-x-4">
+               <div class="w-16 h-16 rounded-full bg-yellow-500 flex items-center justify-center text-2xl font-bold text-black">홍</div>
+               <div>
+                  <p class="text-white font-bold">홍길동</p>
+                  <p class="text-sm text-gray-400">user@example.com</p>
+               </div>
+               <button class="ml-auto px-4 py-2 rounded-lg bg-[#0B0E14] border border-[#2A303C] text-sm text-white hover:border-yellow-500/50">정보 수정</button>
+            </div>
+         </section>
+
+         <!-- Notifications -->
+         <section>
+            <h3 class="text-xl font-bold text-white mb-4 border-b border-[#2A303C] pb-2">알림 설정</h3>
+            <div class="space-y-4">
+               <div class="flex justify-between items-center">
+                  <div>
+                     <p class="text-white font-bold">신규 공고 알림</p>
+                     <p class="text-xs text-gray-500">관심 키워드 매칭 시 알림 수신</p>
+                  </div>
+                  <div class="w-12 h-6 bg-yellow-500 rounded-full relative cursor-pointer">
+                     <div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
+                  </div>
+               </div>
+               <div class="flex justify-between items-center">
+                  <div>
+                     <p class="text-white font-bold">마감 임박 알림</p>
+                     <p class="text-xs text-gray-500">마감 3일 전 알림 수신</p>
+                  </div>
+                  <div class="w-12 h-6 bg-[#2A303C] rounded-full relative cursor-pointer">
+                     <div class="absolute left-1 top-1 w-4 h-4 bg-gray-500 rounded-full"></div>
+                  </div>
+               </div>
+            </div>
+         </section>
+
+      </div>
+    </div>
+  </main>
+</div>

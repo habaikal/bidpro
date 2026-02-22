@@ -1,0 +1,63 @@
+{
+  "version": 2,
+  "name": "bid-automation-platform",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "headers": {
+        "cache-control": "s-maxage=31536000,immutable"
+      }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "REACT_APP_ENV": "production",
+    "REACT_APP_VERSION": "1.0.0",
+    "REACT_APP_APP_NAME": "BidAI Pro",
+    "REACT_APP_APP_DESCRIPTION": "정부 입찰 자동화 AI 플랫폼",
+    "REACT_APP_ENABLE_WEBSOCKET": "true",
+    "REACT_APP_ENABLE_CERTIFICATE": "true",
+    "REACT_APP_ENABLE_AI_ANALYSIS": "true",
+    "REACT_APP_ENABLE_AUTO_BID": "true"
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        }
+      ]
+    }
+  ],
+  "functions": {
+    "src/pages/api/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  }
+}
